@@ -1,4 +1,5 @@
 # Importing libraries
+import streamlit as st
 import pandas as pd
 import re
 import string
@@ -7,6 +8,9 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer, PorterStemmer
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report
+
 
 # Downloading data
 nltk.download('stopwords')
@@ -107,3 +111,18 @@ X_test_tfidf = tfidf.transform(X_test)
 
 print("\nTF-IDF Train shape:", X_train_tfidf.shape)
 print("TF-IDF Test shape:", X_test_tfidf.shape)
+
+# Model Training and Evaluation
+
+# Initialize the model with class weighting
+model = LogisticRegression(max_iter=1000, class_weight='balanced')
+
+# Train the model
+model.fit(X_train_tfidf, y_train)
+
+# Make predictions
+y_pred = model.predict(X_test_tfidf)
+
+# Evaluate
+st.write("Model Accuracy:", accuracy_score(y_test, y_pred))
+st.write("Classification Report:\n", classification_report(y_test, y_pred))
